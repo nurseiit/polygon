@@ -15,6 +15,10 @@ struct Cli {
     #[arg(short, long, default_value_t = false)]
     words: bool,
 
+    /// print the character counts
+    #[arg(short = 'm', long, default_value_t = false)]
+    chars: bool,
+
     path: std::path::PathBuf,
 }
 
@@ -23,20 +27,25 @@ fn main() {
 
     let content = std::fs::read_to_string(&args.path).expect("could not read file");
 
-    if args.bytes {
-        let bytes_count = content.bytes().len();
-        print!("{:>7} ", bytes_count)
-    }
+    let lines_count = content.lines().count();
+    let words_count = content.split_whitespace().count();
+    let char_count = content.chars().count();
+    let bytes_count = content.bytes().len();
 
     if args.lines {
-        let lines_count = content.lines().count();
-        print!("{:>7} ", lines_count)
+        print!("{:>6} ", lines_count)
     }
 
     if args.words {
-        let words_count = content.split_whitespace().count();
+        print!("{:>6} ", words_count)
+    }
 
-        print!("{:>7} ", words_count)
+    if args.chars {
+        print!("{:>6} ", char_count)
+    }
+
+    if args.bytes {
+        print!("{:>6} ", bytes_count)
     }
 
     println!("{}", args.path.to_str().unwrap())
