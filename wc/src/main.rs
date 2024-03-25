@@ -11,6 +11,10 @@ struct Cli {
     #[arg(short, long, default_value_t = false)]
     lines: bool,
 
+    /// print the word counts
+    #[arg(short, long, default_value_t = false)]
+    words: bool,
+
     path: std::path::PathBuf,
 }
 
@@ -27,6 +31,12 @@ fn main() {
     if args.lines {
         let lines_count = content.lines().count();
         print!("{:>7} ", lines_count)
+    }
+
+    if args.words {
+        let words_count = content.split_whitespace().count();
+
+        print!("{:>7} ", words_count)
     }
 
     println!("{}", args.path.to_str().unwrap())
