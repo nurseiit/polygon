@@ -6,6 +6,11 @@ struct Cli {
     /// print the byte counts
     #[arg(short = 'c', long, default_value_t = false)]
     bytes: bool,
+
+    /// print the newline counts
+    #[arg(short, long, default_value_t = false)]
+    lines: bool,
+
     path: std::path::PathBuf,
 }
 
@@ -14,7 +19,15 @@ fn main() {
 
     let content = std::fs::read_to_string(&args.path).expect("could not read file");
 
-    let bytes_count = content.bytes().len();
+    if args.bytes {
+        let bytes_count = content.bytes().len();
+        print!("{:>7} ", bytes_count)
+    }
 
-    println!("{} {}", bytes_count, args.path.to_str().unwrap())
+    if args.lines {
+        let lines_count = content.lines().count();
+        print!("{:>7} ", lines_count)
+    }
+
+    println!("{}", args.path.to_str().unwrap())
 }
