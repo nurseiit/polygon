@@ -4,15 +4,15 @@ use clap::Parser;
 #[derive(Parser)]
 struct Cli {
     /// print the byte counts
-    #[arg(short = 'c', long, default_value_t = false)]
+    #[arg(short = 'c', long)]
     bytes: bool,
 
     /// print the newline counts
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long)]
     lines: bool,
 
     /// print the word counts
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long)]
     words: bool,
 
     /// print the character counts
@@ -20,6 +20,16 @@ struct Cli {
     chars: bool,
 
     path: std::path::PathBuf,
+}
+
+fn log10(x: usize) -> usize {
+    let mut result = 0;
+    let mut num = x;
+    while num > 0 {
+        num /= 10;
+        result += 1;
+    }
+    result
 }
 
 fn main() {
@@ -32,20 +42,36 @@ fn main() {
     let char_count = content.chars().count();
     let bytes_count = content.bytes().len();
 
-    if args.lines {
-        print!("{:>6} ", lines_count)
+    let show_all = !args.chars & [args.lines, args.words, args.bytes].iter().all(|&x| !x);
+
+    let mut counts_to_show: Vec<usize> = Vec::new();
+
+    if args.lines || show_all {
+        counts_to_show.push(lines_count);
     }
 
-    if args.words {
-        print!("{:>6} ", words_count)
+    if args.words || show_all {
+        counts_to_show.push(words_count);
     }
 
     if args.chars {
-        print!("{:>6} ", char_count)
+        counts_to_show.push(char_count);
     }
 
-    if args.bytes {
-        print!("{:>6} ", bytes_count)
+    if args.bytes || show_all {
+        counts_to_show.push(bytes_count);
+    }
+
+    if !counts_to_show.is_empty() {
+        let largest_count = counts_to_show.iter().max().unwrap_or(&0);
+        let largest_width = log10(*largest_count);
+        let out = counts_to_show
+            .iter()
+            .map(|count| format!("{:>width$}", count, width = largest_width))
+            .collect::<Vec<String>>()
+            .join(" ");
+
+        print!("{} ", out)
     }
 
     println!("{}", args.path.to_str().unwrap())
