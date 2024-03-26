@@ -1,3 +1,4 @@
+use anyhow::{Context, Result};
 use clap::Parser;
 
 /// a simple wc
@@ -32,10 +33,11 @@ fn log10(x: usize) -> usize {
     result
 }
 
-fn main() {
+fn main() -> Result<()> {
     let args = Cli::parse();
 
-    let content = std::fs::read_to_string(&args.path).expect("could not read file");
+    let content = std::fs::read_to_string(&args.path)
+        .with_context(|| format!("could not read file `{}`", args.path.display()))?;
 
     let lines_count = content.lines().count();
     let words_count = content.split_whitespace().count();
@@ -74,5 +76,7 @@ fn main() {
         print!("{} ", out)
     }
 
-    println!("{}", args.path.to_str().unwrap())
+    println!("{}", args.path.display());
+
+    Ok(())
 }
