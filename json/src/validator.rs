@@ -5,33 +5,39 @@ use crate::{
 use anyhow::Result;
 
 struct JsonValidator {
-    lexer: Lexer,
+    tokens: Vec<Token>,
 }
 
 impl JsonValidator {
     pub fn new(input: String) -> JsonValidator {
-        JsonValidator {
-            lexer: Lexer::new(input),
-        }
+        let tokens = Lexer::new(input).read_all_tokens();
+        JsonValidator { tokens }
     }
 
-    pub fn is_valid(&mut self) -> bool {
-        let all_tokens = self.lexer.read_all_tokens();
-        // TODO: validate here
-        all_tokens == vec![Token::LSquirly, Token::RSquirly, Token::EOF]
+    pub fn is_valid(&self) -> bool {
+        self.is_wrapped_in_squirlies()
+    }
+
+    fn is_wrapped_in_squirlies(&self) -> bool {
+        if self.tokens.len() >= 2 {
+            self.tokens.starts_with(&[Token::LSquirly])
+                && self.tokens.ends_with(&[Token::RSquirly, Token::EOF])
+        } else {
+            false
+        }
     }
 }
 
 pub fn is_file_a_valid_json(path: &std::path::PathBuf) -> Result<bool> {
     let file_contents = read_file_contents(path)?;
-    let mut json_validator = JsonValidator::new(file_contents);
+    let json_validator = JsonValidator::new(file_contents);
 
     Ok(json_validator.is_valid())
 }
 
 #[cfg(test)]
 mod validator_tests {
-    use super::*;
+    use super::is_file_a_valid_json;
     use crate::fs_utils::get_test_file_path_by_step;
 
     fn test_step(step: i32, is_valid: bool) {
