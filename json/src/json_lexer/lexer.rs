@@ -18,6 +18,17 @@ impl Lexer {
         }
     }
 
+    pub fn read_all_tokens(&mut self) -> Vec<Token> {
+        let mut actual_tokens = Vec::new();
+        while let Ok(token) = self.next_token() {
+            actual_tokens.push(token);
+            if token == Token::EOF {
+                break;
+            }
+        }
+        actual_tokens
+    }
+
     pub fn next_token(&mut self) -> Result<Token> {
         self.skip_next_whitespaces();
 
@@ -59,24 +70,13 @@ mod lexer_tests {
     use super::Lexer;
     use crate::json_lexer::token::Token;
 
-    fn read_tokens_as_vec(mut lexer: Lexer) -> Vec<Token> {
-        let mut actual_tokens = Vec::new();
-        while let Ok(token) = lexer.next_token() {
-            actual_tokens.push(token);
-            if token == Token::EOF {
-                break;
-            }
-        }
-        actual_tokens
-    }
-
     #[test]
     fn get_next_token_test() {
         let input = "{}";
-        let lexer = Lexer::new(input.to_string());
+        let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![Token::LSquirly, Token::RSquirly, Token::EOF];
-        let actual_tokens = read_tokens_as_vec(lexer);
+        let actual_tokens = lexer.read_all_tokens();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
         assert_eq!(expected_tokens, actual_tokens);

@@ -1,15 +1,32 @@
-use crate::fs_utils::read_file_contents;
+use crate::{
+    fs_utils::read_file_contents,
+    json_lexer::{lexer::Lexer, token::Token},
+};
 use anyhow::Result;
 
-fn is_string_a_valid_json(str: String) -> bool {
-    str == "{}"
+struct JsonValidator {
+    lexer: Lexer,
+}
+
+impl JsonValidator {
+    pub fn new(input: String) -> JsonValidator {
+        JsonValidator {
+            lexer: Lexer::new(input),
+        }
+    }
+
+    pub fn is_valid(&mut self) -> bool {
+        let all_tokens = self.lexer.read_all_tokens();
+        // TODO: validate here
+        all_tokens == vec![Token::LSquirly, Token::RSquirly, Token::EOF]
+    }
 }
 
 pub fn is_file_a_valid_json(path: &std::path::PathBuf) -> Result<bool> {
     let file_contents = read_file_contents(path)?;
-    let result = is_string_a_valid_json(file_contents);
+    let mut json_validator = JsonValidator::new(file_contents);
 
-    Ok(result)
+    Ok(json_validator.is_valid())
 }
 
 #[cfg(test)]
