@@ -1,5 +1,5 @@
 use super::token::Token;
-use anyhow::Result;
+use anyhow::{bail, Result};
 
 pub struct Lexer {
     /// input string as bytes vector
@@ -18,7 +18,7 @@ impl Lexer {
         }
     }
 
-    pub fn read_all_tokens(&mut self) -> Vec<Token> {
+    pub fn read_all_tokens(&mut self) -> Result<Vec<Token>> {
         let mut actual_tokens = Vec::new();
         while let Ok(token) = self.next_token() {
             actual_tokens.push(token);
@@ -26,7 +26,7 @@ impl Lexer {
                 break;
             }
         }
-        actual_tokens
+        Ok(actual_tokens)
     }
 
     pub fn next_token(&mut self) -> Result<Token> {
@@ -41,7 +41,7 @@ impl Lexer {
                 Token::Word(word)
             }
             0 => Token::EOF,
-            _ => unreachable!(
+            _ => bail!(
                 "could not match '{}' to any tokens!",
                 self.get_current_char()
             ),
@@ -95,7 +95,7 @@ mod lexer_tests {
         let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![Token::LSquirly, Token::RSquirly, Token::EOF];
-        let actual_tokens = lexer.read_all_tokens();
+        let actual_tokens = lexer.read_all_tokens().unwrap();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
         assert_eq!(expected_tokens, actual_tokens);
@@ -107,7 +107,7 @@ mod lexer_tests {
         let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![Token::LSquirly, Token::Colon, Token::RSquirly, Token::EOF];
-        let actual_tokens = lexer.read_all_tokens();
+        let actual_tokens = lexer.read_all_tokens().unwrap();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
         assert_eq!(expected_tokens, actual_tokens);
@@ -126,7 +126,7 @@ mod lexer_tests {
             Token::RSquirly,
             Token::EOF,
         ];
-        let actual_tokens = lexer.read_all_tokens();
+        let actual_tokens = lexer.read_all_tokens().unwrap();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
         assert_eq!(expected_tokens, actual_tokens);
