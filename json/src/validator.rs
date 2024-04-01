@@ -133,4 +133,19 @@ mod validator_tests {
     fn step_3_invalid_test() {
         test_step(3, false)
     }
+
+    #[test]
+    fn step_4_invalid_test() {
+        test_step(4, false)
+    }
+
+    #[test]
+    fn step_4_valid_test() {
+        test_step(4, true)
+    }
+
+    #[test]
+    fn steps_4_valid2_test() {
+        test_step_with_num(4, true, 2)
+    }
 }
