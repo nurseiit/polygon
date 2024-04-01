@@ -15,7 +15,7 @@ impl JsonValidator {
     }
 
     pub fn is_valid(&self) -> bool {
-        self.is_wrapped_in_squirlies()
+        self.is_wrapped_in_squirlies() && self.are_brackets_balanced()
     }
 
     fn is_wrapped_in_squirlies(&self) -> bool {
@@ -25,6 +25,43 @@ impl JsonValidator {
         } else {
             false
         }
+    }
+
+    fn is_token_open_bracket(token: Token) -> bool {
+        matches!(token, Token::LSquirly)
+    }
+
+    fn is_token_close_bracket(token: Token) -> bool {
+        matches!(token, Token::RSquirly)
+    }
+
+    fn get_open_bracket_from_close(token: Token) -> Option<Token> {
+        match token {
+            Token::RSquirly => Some(Token::LSquirly),
+            _ => None,
+        }
+    }
+
+    fn are_brackets_balanced(&self) -> bool {
+        let mut stack = vec![];
+        for token in self.tokens.iter().copied() {
+            if JsonValidator::is_token_open_bracket(token) {
+                stack.push(token);
+            }
+            if JsonValidator::is_token_close_bracket(token) {
+                match stack.pop() {
+                    Some(top) => {
+                        let open_bracket =
+                            JsonValidator::get_open_bracket_from_close(token).unwrap();
+                        if top != open_bracket {
+                            return false;
+                        }
+                    }
+                    None => return false,
+                };
+            }
+        }
+        stack.is_empty()
     }
 }
 
