@@ -36,6 +36,10 @@ impl Lexer {
             b'{' => Token::LSquirly,
             b'}' => Token::RSquirly,
             b':' => Token::Colon,
+            b'"' => {
+                let word = self.read_inside_double_quotes();
+                Token::Word(word)
+            }
             0 => Token::EOF,
             _ => unreachable!(
                 "could not match '{}' to any tokens!",
@@ -45,6 +49,20 @@ impl Lexer {
         self.move_current_position_once();
 
         Ok(token)
+    }
+
+    fn read_inside_double_quotes(&mut self) -> String {
+        let mut chars = vec![];
+        self.move_current_position_once();
+        let mut current = self.get_current_char();
+
+        while current != b'"' && current != 0 {
+            chars.push(current);
+            self.move_current_position_once();
+            current = self.get_current_char();
+        }
+
+        String::from_utf8_lossy(&chars).to_string()
     }
 
     fn skip_next_whitespaces(&mut self) {
@@ -89,6 +107,25 @@ mod lexer_tests {
         let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![Token::LSquirly, Token::Colon, Token::RSquirly, Token::EOF];
+        let actual_tokens = lexer.read_all_tokens();
+
+        println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
+        assert_eq!(expected_tokens, actual_tokens);
+    }
+
+    #[test]
+    fn get_next_token_with_words() {
+        let input = r#"{ "key":"value" }"#;
+        let mut lexer = Lexer::new(input.to_string());
+
+        let expected_tokens = vec![
+            Token::LSquirly,
+            Token::Word(String::from("key")),
+            Token::Colon,
+            Token::Word(String::from("value")),
+            Token::RSquirly,
+            Token::EOF,
+        ];
         let actual_tokens = lexer.read_all_tokens();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
