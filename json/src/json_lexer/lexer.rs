@@ -35,6 +35,8 @@ impl Lexer {
         let token = match self.get_current_char() {
             b'{' => Token::LSquirly,
             b'}' => Token::RSquirly,
+            b'[' => Token::LSquare,
+            b']' => Token::RSquare,
             b':' => Token::Colon,
             b'"' => {
                 let word = self.read_inside_double_quotes();
@@ -255,6 +257,44 @@ mod lexer_tests {
             Token::Word(String::from("key5")),
             Token::Colon,
             Token::Int(String::from("667")),
+            Token::RSquirly,
+            Token::EOF,
+        ];
+        let actual_tokens = lexer.read_all_tokens().unwrap();
+
+        println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
+        assert_eq!(expected_tokens, actual_tokens);
+    }
+
+    #[test]
+    fn object_and_array_simple() {
+        let input = r#"{
+            "key": "value",
+            "key-n": 667,
+            "key-o": {},
+            "key-l": []
+        }"#;
+        let mut lexer = Lexer::new(input.to_string());
+
+        let expected_tokens = vec![
+            Token::LSquirly,
+            Token::Word(String::from("key")),
+            Token::Colon,
+            Token::Word(String::from("value")),
+            Token::Comma,
+            Token::Word(String::from("key-n")),
+            Token::Colon,
+            Token::Int(String::from("667")),
+            Token::Comma,
+            Token::Word(String::from("key-o")),
+            Token::Colon,
+            Token::LSquirly,
+            Token::RSquirly,
+            Token::Comma,
+            Token::Word(String::from("key-l")),
+            Token::Colon,
+            Token::LSquare,
+            Token::RSquare,
             Token::RSquirly,
             Token::EOF,
         ];

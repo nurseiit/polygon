@@ -4,6 +4,8 @@ use std::fmt::Display;
 pub enum Token {
     LSquirly,
     RSquirly,
+    LSquare,
+    RSquare,
     Colon,
     Word(String),
     Comma,
@@ -19,6 +21,8 @@ impl Display for Token {
         match self {
             Token::LSquirly => write!(f, "LSquirly"),
             Token::RSquirly => write!(f, "RSquirly"),
+            Token::LSquare => write!(f, "LSquare"),
+            Token::RSquare => write!(f, "RSquare"),
             Token::Colon => write!(f, "Colon"),
             Token::Word(x) => write!(f, "Word({})", x),
             Token::Comma => write!(f, "Comma"),
@@ -33,17 +37,11 @@ impl Display for Token {
 
 impl Token {
     pub fn is_open_bracket(&self) -> bool {
-        match self {
-            Token::LSquirly => true,
-            _ => false,
-        }
+        matches!(self, Token::LSquirly | Token::LSquare)
     }
 
     pub fn is_close_bracket(&self) -> bool {
-        match self {
-            Token::RSquirly => true,
-            _ => false,
-        }
+        matches!(self, Token::RSquirly | Token::RSquare)
     }
 
     pub fn is_comma(&self) -> bool {
@@ -53,6 +51,7 @@ impl Token {
     pub fn convert_to_open_bracket(&self) -> &Token {
         match self {
             Token::RSquirly => &Token::LSquirly,
+            Token::RSquare => &Token::LSquare,
             x => x,
         }
     }
