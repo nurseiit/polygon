@@ -7,6 +7,9 @@ pub enum Token {
     Colon,
     Word(String),
     Comma,
+    True,
+    False,
+    Null,
     EOF,
 }
 
@@ -18,6 +21,9 @@ impl Display for Token {
             Token::Colon => write!(f, "Colon"),
             Token::Word(x) => write!(f, "Word({})", x),
             Token::Comma => write!(f, "Comma"),
+            Token::True => write!(f, "True"),
+            Token::False => write!(f, "False"),
+            Token::Null => write!(f, "Null"),
             Token::EOF => write!(f, "EOF"),
         }
     }

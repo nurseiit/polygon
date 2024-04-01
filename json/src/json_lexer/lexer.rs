@@ -41,6 +41,15 @@ impl Lexer {
                 Token::Word(word)
             }
             b',' => Token::Comma,
+            b'a'..=b'z' => {
+                let ident = self.read_ident();
+                match ident.as_str() {
+                    "true" => Token::True,
+                    "false" => Token::False,
+                    "null" => Token::Null,
+                    _ => bail!("could not match literal '{}' to any tokens!", ident),
+                }
+            }
             0 => Token::EOF,
             _ => bail!(
                 "could not match '{}' to any tokens!",
@@ -50,6 +59,22 @@ impl Lexer {
         self.move_current_position_once();
 
         Ok(token)
+    }
+
+    fn read_ident(&mut self) -> String {
+        let mut chars = vec![];
+        let mut current = self.get_current_char();
+
+        while current.is_ascii_lowercase() {
+            chars.push(current);
+            if !self.peek_next_char().is_ascii_lowercase() {
+                break;
+            }
+            self.move_current_position_once();
+            current = self.get_current_char();
+        }
+
+        String::from_utf8_lossy(&chars).to_string()
     }
 
     fn read_inside_double_quotes(&mut self) -> String {
@@ -75,6 +100,14 @@ impl Lexer {
     fn get_current_char(&self) -> u8 {
         if self.current_position < self.input.len() {
             self.input[self.current_position]
+        } else {
+            0
+        }
+    }
+
+    fn peek_next_char(&self) -> u8 {
+        if self.current_position + 1 < self.input.len() {
+            self.input[self.current_position + 1]
         } else {
             0
         }
@@ -125,6 +158,42 @@ mod lexer_tests {
             Token::Colon,
             Token::Word(String::from("value")),
             Token::Comma,
+            Token::RSquirly,
+            Token::EOF,
+        ];
+        let actual_tokens = lexer.read_all_tokens().unwrap();
+
+        println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
+        assert_eq!(expected_tokens, actual_tokens);
+    }
+
+    #[test]
+    fn string_bool_and_null() {
+        let input = r#"{
+            "key1": true,
+            "key2": false,
+            "key3": null,
+            "key4": "value"
+        }"#;
+        let mut lexer = Lexer::new(input.to_string());
+
+        let expected_tokens = vec![
+            Token::LSquirly,
+            Token::Word(String::from("key1")),
+            Token::Colon,
+            Token::True,
+            Token::Comma,
+            Token::Word(String::from("key2")),
+            Token::Colon,
+            Token::False,
+            Token::Comma,
+            Token::Word(String::from("key3")),
+            Token::Colon,
+            Token::Null,
+            Token::Comma,
+            Token::Word(String::from("key4")),
+            Token::Colon,
+            Token::Word(String::from("value")),
             Token::RSquirly,
             Token::EOF,
         ];
