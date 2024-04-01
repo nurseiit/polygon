@@ -35,6 +35,7 @@ impl Lexer {
         let token = match self.get_current_char() {
             b'{' => Token::LSquirly,
             b'}' => Token::RSquirly,
+            b':' => Token::Colon,
             0 => Token::EOF,
             _ => unreachable!(
                 "could not match '{}' to any tokens!",
@@ -71,11 +72,23 @@ mod lexer_tests {
     use crate::json_lexer::token::Token;
 
     #[test]
-    fn get_next_token_test() {
+    fn get_next_token_minimal_test() {
         let input = "{}";
         let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![Token::LSquirly, Token::RSquirly, Token::EOF];
+        let actual_tokens = lexer.read_all_tokens();
+
+        println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
+        assert_eq!(expected_tokens, actual_tokens);
+    }
+
+    #[test]
+    fn get_next_token_with_colon() {
+        let input = "{:}";
+        let mut lexer = Lexer::new(input.to_string());
+
+        let expected_tokens = vec![Token::LSquirly, Token::Colon, Token::RSquirly, Token::EOF];
         let actual_tokens = lexer.read_all_tokens();
 
         println!("expected: {:?}, got: {:?}", expected_tokens, actual_tokens);
