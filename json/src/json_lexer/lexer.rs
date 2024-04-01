@@ -22,7 +22,7 @@ impl Lexer {
         let mut actual_tokens = Vec::new();
         while let Ok(token) = self.next_token() {
             actual_tokens.push(token);
-            if token == Token::EOF {
+            if actual_tokens.last() == Some(&Token::EOF) {
                 break;
             }
         }

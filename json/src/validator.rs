@@ -27,32 +27,16 @@ impl JsonValidator {
         }
     }
 
-    fn is_token_open_bracket(token: Token) -> bool {
-        matches!(token, Token::LSquirly)
-    }
-
-    fn is_token_close_bracket(token: Token) -> bool {
-        matches!(token, Token::RSquirly)
-    }
-
-    fn get_open_bracket_from_close(token: Token) -> Option<Token> {
-        match token {
-            Token::RSquirly => Some(Token::LSquirly),
-            _ => None,
-        }
-    }
-
     fn are_brackets_balanced(&self) -> bool {
         let mut stack = vec![];
-        for token in self.tokens.iter().copied() {
-            if JsonValidator::is_token_open_bracket(token) {
+        for token in &self.tokens {
+            if token.is_open_bracket() {
                 stack.push(token);
             }
-            if JsonValidator::is_token_close_bracket(token) {
+            if token.is_close_bracket() {
                 match stack.pop() {
                     Some(top) => {
-                        let open_bracket =
-                            JsonValidator::get_open_bracket_from_close(token).unwrap();
+                        let open_bracket = token.convert_to_open_bracket();
                         if top != open_bracket {
                             return false;
                         }
