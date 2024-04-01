@@ -10,6 +10,7 @@ pub enum Token {
     True,
     False,
     Null,
+    Int(String),
     EOF,
 }
 
@@ -24,6 +25,7 @@ impl Display for Token {
             Token::True => write!(f, "True"),
             Token::False => write!(f, "False"),
             Token::Null => write!(f, "Null"),
+            Token::Int(x) => write!(f, "Int({})", x),
             Token::EOF => write!(f, "EOF"),
         }
     }
