@@ -19,9 +19,21 @@ impl JsonValidator {
             Ok(tokens) => {
                 JsonValidator::is_wrapped_in_squirlies(tokens)
                     && JsonValidator::are_brackets_balanced(tokens)
+                    && JsonValidator::no_trailing_commas(tokens)
             }
             _ => false,
         }
+    }
+
+    fn no_trailing_commas(tokens: &Vec<Token>) -> bool {
+        for i in 1..tokens.len() {
+            let current = tokens.get(i).unwrap();
+            let prev = tokens.get(i - 1).unwrap();
+            if prev.is_comma() && current.is_close_bracket() {
+                return false;
+            }
+        }
+        true
     }
 
     fn is_wrapped_in_squirlies(tokens: &Vec<Token>) -> bool {
@@ -67,15 +79,19 @@ mod validator_tests {
     use super::is_file_a_valid_json;
     use crate::fs_utils::get_test_file_path_by_step;
 
-    fn test_step_with_num(step: i32, is_valid: bool, test_num: Option<i32>) {
+    fn test_step_with_optional_num(step: i32, is_valid: bool, test_num: Option<i32>) {
         let json_path = get_test_file_path_by_step(step, is_valid, test_num);
         let want = is_valid;
         let result = is_file_a_valid_json(&json_path).unwrap();
         assert_eq!(want, result);
     }
 
+    fn test_step_with_num(step: i32, is_valid: bool, test_num: i32) {
+        test_step_with_optional_num(step, is_valid, Some(test_num))
+    }
+
     fn test_step(step: i32, is_valid: bool) {
-        test_step_with_num(step, is_valid, None)
+        test_step_with_optional_num(step, is_valid, None)
     }
 
     #[test]
@@ -96,5 +112,15 @@ mod validator_tests {
     #[test]
     fn step_2_invalid_test() {
         test_step(2, false)
+    }
+
+    #[test]
+    fn steps_2_valid2_test() {
+        test_step_with_num(2, true, 2)
+    }
+
+    #[test]
+    fn step_2_invalid2_test() {
+        test_step_with_num(2, false, 2)
     }
 }

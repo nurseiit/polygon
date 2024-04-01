@@ -40,6 +40,7 @@ impl Lexer {
                 let word = self.read_inside_double_quotes();
                 Token::Word(word)
             }
+            b',' => Token::Comma,
             0 => Token::EOF,
             _ => bail!(
                 "could not match '{}' to any tokens!",
@@ -114,8 +115,8 @@ mod lexer_tests {
     }
 
     #[test]
-    fn get_next_token_with_words() {
-        let input = r#"{ "key":"value" }"#;
+    fn get_next_token_with_words_and_comma() {
+        let input = r#"{ "key":"value", }"#;
         let mut lexer = Lexer::new(input.to_string());
 
         let expected_tokens = vec![
@@ -123,6 +124,7 @@ mod lexer_tests {
             Token::Word(String::from("key")),
             Token::Colon,
             Token::Word(String::from("value")),
+            Token::Comma,
             Token::RSquirly,
             Token::EOF,
         ];

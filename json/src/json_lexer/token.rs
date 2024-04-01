@@ -6,6 +6,7 @@ pub enum Token {
     RSquirly,
     Colon,
     Word(String),
+    Comma,
     EOF,
 }
 
@@ -16,6 +17,7 @@ impl Display for Token {
             Token::RSquirly => write!(f, "RSquirly"),
             Token::Colon => write!(f, "Colon"),
             Token::Word(x) => write!(f, "Word({})", x),
+            Token::Comma => write!(f, "Comma"),
             Token::EOF => write!(f, "EOF"),
         }
     }
@@ -34,6 +36,10 @@ impl Token {
             Token::RSquirly => true,
             _ => false,
         }
+    }
+
+    pub fn is_comma(&self) -> bool {
+        self == &Token::Comma
     }
 
     pub fn convert_to_open_bracket(&self) -> &Token {
