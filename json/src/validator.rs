@@ -17,16 +17,16 @@ impl JsonValidator {
     pub fn is_valid(&self) -> bool {
         match &self.tokens {
             Ok(tokens) => {
-                JsonValidator::is_wrapped_in_squirlies(tokens)
+                JsonValidator::is_wrapped_in_correct_brackets(tokens)
                     && JsonValidator::are_brackets_balanced(tokens)
                     && JsonValidator::no_trailing_commas(tokens)
-                    && JsonValidator::no_trailing_zeroes_in_numbers(tokens)
+                    && JsonValidator::no_leading_zeroes_in_numbers(tokens)
             }
             _ => false,
         }
     }
 
-    fn no_trailing_zeroes_in_numbers(tokens: &[Token]) -> bool {
+    fn no_leading_zeroes_in_numbers(tokens: &[Token]) -> bool {
         tokens.iter().all(|token| match token {
             Token::Int(x) => !x.starts_with('0') || x.len() == 1,
             _ => true,
@@ -44,10 +44,12 @@ impl JsonValidator {
         true
     }
 
-    fn is_wrapped_in_squirlies(tokens: &Vec<Token>) -> bool {
+    fn is_wrapped_in_correct_brackets(tokens: &Vec<Token>) -> bool {
         if tokens.len() >= 2 {
             tokens.starts_with(&[Token::LSquirly])
                 && tokens.ends_with(&[Token::RSquirly, Token::EOF])
+                || tokens.starts_with(&[Token::LSquare])
+                    && tokens.ends_with(&[Token::RSquare, Token::EOF])
         } else {
             false
         }
