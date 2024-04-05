@@ -1,5 +1,5 @@
-from .french_deck import french_deck_example
+from fluent.vector import vector_example
 
 
 def start():
-	french_deck_example()
+	vector_example()
