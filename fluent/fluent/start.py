@@ -1,2 +1,5 @@
+from .french_deck import french_deck_example
+
+
 def start():
-    print("hello world!")
+	french_deck_example()

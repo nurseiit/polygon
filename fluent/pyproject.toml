@@ -11,6 +11,14 @@ start = "fluent.start:start"
 [tool.poetry.dependencies]
 python = "^3.10"
 
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "tab"
+docstring-code-format = true
+
 
 [build-system]
 requires = ["poetry-core"]
