@@ -3,6 +3,29 @@ import sys
 OPTIONS = ["-c", "-l", "-w", "-m"]
 
 
+def word_count(options: list[str], file_content: bytes) -> list[int]:
+    output = []
+
+    if "-l" in options or not options:
+        lines_count = len(file_content.splitlines())
+        output.append(lines_count)
+    if "-w" in options or not options:
+        words_count = len(file_content.split())
+        output.append(words_count)
+    if "-c" in options or not options:
+        bytes_count = len(file_content)
+        output.append(bytes_count)
+    if "-m" in options:
+        chars_len = len(file_content.encode("utf-8"))
+        output.append(chars_len)
+
+    return output
+
+
+def result_to_str(output: list[int]) -> str:
+    return " ".join(list(map(lambda x: str(x), output)))
+
+
 def main():
     args = sys.argv[1:]
 
@@ -17,35 +40,24 @@ def main():
 
     if not file_names:
         file_content = sys.stdin.read().encode("utf-8")
-    else:
-        file_name = file_names[0]
+        print(result_to_str(word_count(options, file_content)))
+        exit(0)
+
+    all_results: list[list[int]] = []
+
+    for file_name in file_names:
         with open(file_name, "rb") as f:
             file_content = f.read()
+        result = word_count(options, file_content)
+        all_results.append(result)
+        print("{} {}".format(result_to_str(result), file_name))
 
-    output: list[int] = []
-
-    if "-l" in options or not options:
-        lines_count = len(file_content.splitlines())
-        output.append(lines_count)
-
-    if "-w" in options or not options:
-        words_count = len(file_content.split())
-        output.append(words_count)
-
-    if "-c" in options or not options:
-        bytes_count = len(file_content)
-        output.append(bytes_count)
-
-    if "-m" in options:
-        chars_len = len(file_content.encode("utf-8"))
-        output.append(chars_len)
-
-    result = " ".join(list(map(lambda x: str(x), output)))
-
-    if file_names:
-        print("{} {}".format(result, file_name))
-    else:
-        print(result)
+    if len(all_results) > 1:
+        result = [0] * len(all_results[0])
+        for i in range(len(all_results)):
+            for j in range(len(all_results[i])):
+                result[j] += all_results[i][j]
+        print("{} {}".format(result_to_str(result), "total"))
 
 
 if __name__ == "__main__":
