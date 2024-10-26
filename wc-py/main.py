@@ -53,10 +53,7 @@ def main():
         print("{} {}".format(result_to_str(result), file_name))
 
     if len(all_results) > 1:
-        result = [0] * len(all_results[0])
-        for i in range(len(all_results)):
-            for j in range(len(all_results[i])):
-                result[j] += all_results[i][j]
+        result = [sum(col) for col in zip(*all_results)]
         print("{} {}".format(result_to_str(result), "total"))
 
 
