@@ -16,13 +16,11 @@ def main():
     file_names = list(filter(lambda x: x not in OPTIONS, args))
 
     if not file_names:
-        file_content = sys.stdin.read()
-        bytes_count = len(file_content.encode("utf-8"))
+        file_content = sys.stdin.read().encode("utf-8")
     else:
         file_name = file_names[0]
-        with open(file_name) as f:
+        with open(file_name, "rb") as f:
             file_content = f.read()
-            bytes_count = f.tell()
 
     output: list[int] = []
 
@@ -35,6 +33,7 @@ def main():
         output.append(words_count)
 
     if "-c" in options or not options:
+        bytes_count = len(file_content)
         output.append(bytes_count)
 
     if "-m" in options:
