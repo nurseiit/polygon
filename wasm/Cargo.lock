@@ -122,14 +122,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasm"
-version = "0.1.0"
-dependencies = [
- "wasm-bindgen",
- "wasm-bindgen-test",
-]
-
-[[package]]
 name = "wasm-bindgen"
 version = "0.2.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -222,6 +214,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "wasm-library"
+version = "0.1.0"
+dependencies = [
+ "wasm-bindgen",
+ "wasm-bindgen-test",
 ]
 
 [[package]]

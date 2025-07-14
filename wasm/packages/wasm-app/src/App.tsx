@@ -1,4 +1,4 @@
-import { greet } from "wasm";
+import { greet } from "@workspace/wasm-library";
 import "./App.css";
 
 function App() {
