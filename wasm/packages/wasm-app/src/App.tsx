@@ -1,21 +1,29 @@
-import { useCallback, useState, type ChangeEventHandler } from "react";
-import { greet } from "@workspace/wasm-library";
-
-import "./App.css";
+import { useEffect, useRef } from "react";
+import { Universe } from "../../wasm-library";
 
 function App() {
-	const [value, setValue] = useState("");
+	const canvasRef = useRef<HTMLPreElement>(null);
 
-	const handleGreet = useCallback(() => greet(value), [value]);
+	useEffect(() => {
+		const universe = Universe.new();
 
-	const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
-		({ currentTarget }) => setValue(currentTarget.value),
-		[],
-	);
+		const renderLoop = () => {
+			if (canvasRef.current == null) {
+				return;
+			}
+
+			canvasRef.current.textContent = universe.render();
+			universe.tick();
+
+			requestAnimationFrame(renderLoop);
+		};
+
+		requestAnimationFrame(renderLoop);
+	}, []);
+
 	return (
 		<>
-			<input value={value} onChange={handleChange} />
-			<button onClick={handleGreet}>Greet {value}</button>
+			<pre ref={canvasRef} />
 		</>
 	);
 }
