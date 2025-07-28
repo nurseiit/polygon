@@ -21,11 +21,7 @@ function App() {
 		requestAnimationFrame(renderLoop);
 	}, []);
 
-	return (
-		<>
-			<pre ref={canvasRef} />
-		</>
-	);
+	return <pre ref={canvasRef} />;
 }
 
 export default App;
