@@ -1,6 +1,6 @@
 extern crate wasm_library;
 use wasm_bindgen_test::wasm_bindgen_test;
-use wasm_library::Universe;
+use wasm_library::universe::Universe;
 
 #[cfg(test)]
 pub fn input_spaceship() -> Universe {

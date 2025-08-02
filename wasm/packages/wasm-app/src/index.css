@@ -10,7 +10,8 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-body {
+body,
+#root {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -20,4 +21,5 @@ body {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	gap: 8px;
 }
