@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"build:wasm": "wasm-pack build  --out-dir packages/wasm-library --out-name index --scope workspace"
+		"build:wasm": "wasm-pack build  --out-dir packages/wasm-library --out-name index --scope workspace",
+		"test:wasm": "wasm-pack test --firefox --headless"
 	},
 	"keywords": [],
 	"author": "",

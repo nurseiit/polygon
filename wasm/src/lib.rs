@@ -1,4 +1,3 @@
-use core::fmt;
 use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
 
@@ -39,12 +38,9 @@ impl Universe {
         self.height
     }
 
-    pub fn cells(&self) -> *const usize {
+    /// Returns a pointer to the cells array in wasm memory
+    pub fn cells_ptr(&self) -> *const usize {
         self.cells.as_slice().as_ptr()
-    }
-
-    pub fn render(&self) -> String {
-        self.to_string()
     }
 
     pub fn tick(&mut self) {
@@ -90,29 +86,34 @@ impl Universe {
     }
 }
 
-impl Default for Universe {
-    fn default() -> Self {
-        Self::new()
+impl Universe {
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+    }
+
+    /// Sets cells to a new FixedBitSet the size of the current universe.
+    pub fn reset_cells(&mut self) {
+        let size = self.width * self.height;
+        self.cells = FixedBitSet::with_capacity(size as usize);
+    }
+    pub fn get_cells_ref(&self) -> &FixedBitSet {
+        &self.cells
+    }
+
+    pub fn set_cells_as_alive(&mut self, alive_cells: &[(u32, u32)]) {
+        for &(row, col) in alive_cells {
+            let idx = self.get_index(row, col);
+            self.cells.set(idx, true);
+        }
     }
 }
 
-impl fmt::Display for Universe {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in 0..self.height {
-            for col in 0..self.width {
-                let idx = self.get_index(row, col);
-                let cell = self.cells[idx];
-                write!(
-                    f,
-                    "{}",
-                    match cell {
-                        false => '◻',
-                        true => '◼',
-                    }
-                )?;
-            }
-            writeln!(f)?;
-        }
-        Ok(())
+impl Default for Universe {
+    fn default() -> Self {
+        Self::new()
     }
 }

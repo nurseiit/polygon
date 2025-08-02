@@ -60,7 +60,7 @@ function App() {
 
 			const getIdx = (row: number, col: number): number => row * width + col;
 
-			const cellsPtr = universe.cells();
+			const cellsPtr = universe.cells_ptr();
 			const cells = new Uint8Array(
 				memory.buffer,
 				cellsPtr,
