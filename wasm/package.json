@@ -1,0 +1,14 @@
+{
+	"name": "wasm",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"build:wasm": "wasm-pack build  --out-dir packages/wasm-library --out-name index --scope workspace",
+		"test:wasm": "wasm-pack test --firefox --headless"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.13.1"
+}
